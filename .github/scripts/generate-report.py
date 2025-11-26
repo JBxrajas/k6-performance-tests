@@ -11,8 +11,13 @@ def load_summary(file_path):
     """Load k6 summary JSON file"""
     try:
         with open(file_path, 'r') as f:
-            return json.load(f)
-    except:
+            data = json.load(f)
+            # Debug: print first level keys to understand structure
+            if data and 'metrics' in data:
+                print(f"  📊 Loaded {file_path.name} with {len(data['metrics'])} metrics")
+            return data
+    except Exception as e:
+        print(f"  ❌ Error loading {file_path}: {e}")
         return None
 
 def format_duration(ms):
@@ -117,14 +122,29 @@ def generate_detail_page(test_name, summary, file_name, docs_dir):
     
     metrics = summary.get('metrics', {})
     
+    # Helper to safely extract metric values
+    def get_metric_dict(metric_name):
+        """Extract metric values whether they're in 'values' dict or direct"""
+        if metric_name not in metrics:
+            return {}
+        metric_data = metrics[metric_name]
+        if isinstance(metric_data, dict):
+            return metric_data.get('values', metric_data)
+        return {}
+    
     # Extract all available metrics
-    http_req_duration = metrics.get('http_req_duration', {}).get('values', {})
-    http_req_waiting = metrics.get('http_req_waiting', {}).get('values', {})
-    http_req_connecting = metrics.get('http_req_connecting', {}).get('values', {})
+    http_req_duration = get_metric_dict('http_req_duration')
+    http_req_waiting = get_metric_dict('http_req_waiting')
+    http_req_connecting = get_metric_dict('http_req_connecting')
+    http_req_blocked = get_metric_dict('http_req_blocked')
+    http_req_sending = get_metric_dict('http_req_sending')
+    http_req_receiving = get_metric_dict('http_req_receiving')
+    iteration_duration = get_metric_dict('iteration_duration')
+    
+    # Extract count/rate metrics
     http_reqs = get_metric_value(metrics, 'http_reqs', 'count')
     http_req_failed = get_metric_value(metrics, 'http_req_failed', 'rate')
     iterations = get_metric_value(metrics, 'iterations', 'count')
-    iteration_duration = metrics.get('iteration_duration', {}).get('values', {})
     vus = get_metric_value(metrics, 'vus', 'value')
     vus_max = get_metric_value(metrics, 'vus_max', 'max')
     data_received = get_metric_value(metrics, 'data_received', 'count')
@@ -133,45 +153,38 @@ def generate_detail_page(test_name, summary, file_name, docs_dir):
     # Build metrics table
     metrics_rows = ""
     
-    # HTTP Request Duration metrics
-    if http_req_duration:
-        metrics_rows += f"""
+    # Helper function to add metric row
+    def add_metric_row(name, values):
+        if values and any(values.values()):  # Check if dict has any non-zero values
+            return f"""
         <tr>
-            <td>http_req_duration</td>
-            <td>{format_duration(http_req_duration.get('avg', 0))}</td>
-            <td>{format_duration(http_req_duration.get('min', 0))}</td>
-            <td>{format_duration(http_req_duration.get('med', 0))}</td>
-            <td>{format_duration(http_req_duration.get('max', 0))}</td>
-            <td>{format_duration(http_req_duration.get('p(90)', 0))}</td>
-            <td>{format_duration(http_req_duration.get('p(95)', 0))}</td>
+            <td><strong>{name}</strong></td>
+            <td>{format_duration(values.get('avg', 0))}</td>
+            <td>{format_duration(values.get('min', 0))}</td>
+            <td>{format_duration(values.get('med', 0))}</td>
+            <td>{format_duration(values.get('max', 0))}</td>
+            <td>{format_duration(values.get('p(90)', 0))}</td>
+            <td>{format_duration(values.get('p(95)', 0))}</td>
         </tr>
         """
+        return ""
     
-    # HTTP Request Waiting metrics
-    if http_req_waiting:
-        metrics_rows += f"""
-        <tr>
-            <td>http_req_waiting</td>
-            <td>{format_duration(http_req_waiting.get('avg', 0))}</td>
-            <td>{format_duration(http_req_waiting.get('min', 0))}</td>
-            <td>{format_duration(http_req_waiting.get('med', 0))}</td>
-            <td>{format_duration(http_req_waiting.get('max', 0))}</td>
-            <td>{format_duration(http_req_waiting.get('p(90)', 0))}</td>
-            <td>{format_duration(http_req_waiting.get('p(95)', 0))}</td>
-        </tr>
-        """
+    # Add all available metrics
+    metrics_rows += add_metric_row('http_req_duration', http_req_duration)
+    metrics_rows += add_metric_row('http_req_blocked', http_req_blocked)
+    metrics_rows += add_metric_row('http_req_connecting', http_req_connecting)
+    metrics_rows += add_metric_row('http_req_sending', http_req_sending)
+    metrics_rows += add_metric_row('http_req_waiting', http_req_waiting)
+    metrics_rows += add_metric_row('http_req_receiving', http_req_receiving)
+    metrics_rows += add_metric_row('iteration_duration', iteration_duration)
     
-    # Iteration Duration metrics
-    if iteration_duration:
-        metrics_rows += f"""
+    # If no metrics rows, show a message
+    if not metrics_rows.strip():
+        metrics_rows = """
         <tr>
-            <td>iteration_duration</td>
-            <td>{format_duration(iteration_duration.get('avg', 0))}</td>
-            <td>{format_duration(iteration_duration.get('min', 0))}</td>
-            <td>{format_duration(iteration_duration.get('med', 0))}</td>
-            <td>{format_duration(iteration_duration.get('max', 0))}</td>
-            <td>{format_duration(iteration_duration.get('p(90)', 0))}</td>
-            <td>{format_duration(iteration_duration.get('p(95)', 0))}</td>
+            <td colspan="7" style="text-align: center; color: #999;">
+                No detailed timing metrics available for this test
+            </td>
         </tr>
         """
     
