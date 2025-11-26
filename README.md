@@ -83,7 +83,7 @@ k6 provides several built-in metrics:
 2. **Study Scenarios**: Review `scenarios/` for real-world patterns
 3. **Complete Exercises**: Work through `exercises/` to test your knowledge
 
-##  Tips
+## 💡 Tips
 
 - Start with low VU counts and gradually increase
 - Always use checks to validate responses
@@ -91,13 +91,39 @@ k6 provides several built-in metrics:
 - Use meaningful tags for better metrics organization
 - Comment your tests for clarity
 
-##  Resources
+## 🔄 CI/CD Integration
+
+This project includes GitHub Actions workflow that:
+- ✅ Runs k6 tests automatically on every push
+- 📊 Generates test results and reports
+- 🌐 Publishes results to GitHub Pages
+- 📅 Runs scheduled tests daily
+
+### Setting up GitHub Pages
+
+1. Push this repository to GitHub (if not already done)
+2. Go to your repository **Settings** → **Pages**
+3. Under "Source", select **Deploy from a branch**
+4. Select branch: **gh-pages** and folder: **/ (root)**
+5. Click **Save**
+
+After the workflow runs, your test results will be available at:
+`https://jbxrajas.github.io/k6-performance-tests/`
+
+### Manual Workflow Trigger
+
+You can also trigger tests manually:
+1. Go to **Actions** tab in your repository
+2. Select **K6 Performance Tests** workflow
+3. Click **Run workflow**
+
+## 📖 Resources
 
 - [k6 Official Documentation](https://k6.io/docs/)
 - [k6 Examples](https://k6.io/docs/examples/)
 - [k6 Community Forum](https://community.k6.io/)
 
-##  Contributing
+## 🤝 Contributing
 
 Feel free to add more examples, scenarios, or exercises to this project!
 
