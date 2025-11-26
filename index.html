@@ -4,169 +4,445 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>K6 Performance Test Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
-            border-radius: 12px;
+            border-radius: 16px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             padding: 40px;
         }
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
+        .header h1 {
             font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
         }
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
+        .header .subtitle {
             font-size: 1.1em;
+            opacity: 0.9;
         }
         .timestamp {
-            background: #f0f0f0;
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin-bottom: 30px;
-            color: #555;
-        }
-        .test-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-        .test-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
             border-radius: 8px;
-            padding: 25px;
-            color: white;
-            transition: transform 0.2s;
-        }
-        .test-card:hover {
-            transform: translateY(-5px);
-        }
-        .test-card h3 {
-            margin-bottom: 10px;
-            font-size: 1.3em;
-        }
-        .test-card p {
-            opacity: 0.9;
-            line-height: 1.6;
-        }
-        .status {
+            margin-top: 20px;
             display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: bold;
-            margin-top: 10px;
         }
-        .status.success { background: #10b981; }
-        .status.warning { background: #f59e0b; }
-        .stats {
-            margin-top: 40px;
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 8px;
-        }
-        .stats h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .stat-grid {
+        .stats-overview {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
+            padding: 40px;
+            background: #f8f9fa;
         }
-        .stat-item {
-            text-align: center;
-            padding: 20px;
+        .stat-card {
             background: white;
-            border-radius: 8px;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         .stat-value {
-            font-size: 2em;
-            font-weight: bold;
+            font-size: 2.5em;
+            font-weight: 700;
             color: #667eea;
+            margin-bottom: 5px;
         }
         .stat-label {
             color: #666;
-            margin-top: 5px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .content {
+            padding: 40px;
+        }
+        .section-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .test-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .test-card.success {
+            border-color: #10b981;
+        }
+        .test-card.warning {
+            border-color: #f59e0b;
+        }
+        .test-card.error {
+            border-color: #ef4444;
+        }
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .test-header h3 {
+            font-size: 1.3em;
+            color: #333;
+        }
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .status-badge.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status-badge.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .status-badge.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .test-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .metric {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .metric-label {
+            display: block;
+            font-size: 0.75em;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .metric-value {
+            display: block;
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #333;
+        }
+        .details-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .details-link:hover {
+            text-decoration: underline;
         }
         .footer {
-            margin-top: 40px;
+            background: #f8f9fa;
+            padding: 30px;
             text-align: center;
             color: #666;
-            padding-top: 20px;
             border-top: 1px solid #e0e0e0;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .chart-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 K6 Performance Test Results</h1>
-        <p class="subtitle">Automated performance testing with Grafana k6</p>
-        <div class="timestamp">
-            <strong>Last Run:</strong> <span id="timestamp"></span>
+        <div class="header">
+            <h1>🚀 K6 Performance Test Results</h1>
+            <p class="subtitle">Automated performance testing with Grafana k6</p>
+            <div class="timestamp">
+                <strong>Last Run:</strong> 2025-11-26 15:47:37 UTC
+            </div>
         </div>
         
-        <div class="stats">
-            <h2>📊 Test Statistics</h2>
-            <div class="stat-grid">
-                <div class="stat-item">
-                    <div class="stat-value">7</div>
-                    <div class="stat-label">Tests Executed</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">✓</div>
-                    <div class="stat-label">Status</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">~2min</div>
-                    <div class="stat-label">Total Duration</div>
-                </div>
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-value">7</div>
+                <div class="stat-label">Tests Executed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">30,749</div>
+                <div class="stat-label">Total Requests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">100.0%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">0</div>
+                <div class="stat-label">Failed Requests</div>
             </div>
         </div>
 
-        <h2 style="margin-top: 40px; color: #333;">Test Suites</h2>
-        <div class="test-grid">
-            <div class="test-card">
-                <h3>📝 Examples</h3>
-                <p>Basic k6 examples covering fundamentals like HTTP requests, checks, thresholds, and load stages.</p>
-                <span class="status success">✓ Passed</span>
+        <div class="content">
+            <h2 class="section-title">📊 Test Results</h2>
+            <div class="test-grid">
+                
+        <div class="test-card error">
+            <div class="test-header">
+                <h3>01. Hello World</h3>
+                <span class="status-badge error">❌ Error</span>
             </div>
-            <div class="test-card">
-                <h3>🎯 API Load Test</h3>
-                <p>Simulates typical user journey through an API with realistic load patterns.</p>
-                <span class="status success">✓ Passed</span>
+            <p class="test-description">Test failed to complete or parse results</p>
+        </div>
+        
+    <div class="test-card success">
+        <div class="test-header">
+            <h3>02. HTTP Requests</h3>
+            <span class="status-badge success">✓ Passed</span>
+        </div>
+        <div class="test-metrics">
+            <div class="metric">
+                <span class="metric-label">Requests</span>
+                <span class="metric-value">10125</span>
             </div>
-            <div class="test-card">
-                <h3>⚡ Spike Test</h3>
-                <p>Tests system resilience under sudden traffic spikes and recovery behavior.</p>
-                <span class="status success">✓ Passed</span>
+            <div class="metric">
+                <span class="metric-label">Avg Duration</span>
+                <span class="metric-value">21.97ms</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">P95 Duration</span>
+                <span class="metric-value">62.68ms</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Error Rate</span>
+                <span class="metric-value">0.00%</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Iterations</span>
+                <span class="metric-value">3375</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Max VUs</span>
+                <span class="metric-value">60</span>
+            </div>
+        </div>
+        <a href="details.html?test=02-http-requests" class="details-link">View Details →</a>
+    </div>
+    
+    <div class="test-card success">
+        <div class="test-header">
+            <h3>03. Checks & Validations</h3>
+            <span class="status-badge success">✓ Passed</span>
+        </div>
+        <div class="test-metrics">
+            <div class="metric">
+                <span class="metric-label">Requests</span>
+                <span class="metric-value">190</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Avg Duration</span>
+                <span class="metric-value">31.93ms</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">P95 Duration</span>
+                <span class="metric-value">63.38ms</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Error Rate</span>
+                <span class="metric-value">0.00%</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Iterations</span>
+                <span class="metric-value">95</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Max VUs</span>
+                <span class="metric-value">5</span>
+            </div>
+        </div>
+        <a href="details.html?test=03-checks" class="details-link">View Details →</a>
+    </div>
+    
+    <div class="test-card success">
+        <div class="test-header">
+            <h3>04. Thresholds</h3>
+            <span class="status-badge success">✓ Passed</span>
+        </div>
+        <div class="test-metrics">
+            <div class="metric">
+                <span class="metric-label">Requests</span>
+                <span class="metric-value">9350</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Avg Duration</span>
+                <span class="metric-value">31.91ms</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">P95 Duration</span>
+                <span class="metric-value">63.67ms</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Error Rate</span>
+                <span class="metric-value">0.00%</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Iterations</span>
+                <span class="metric-value">4675</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Max VUs</span>
+                <span class="metric-value">10</span>
+            </div>
+        </div>
+        <a href="details.html?test=04-thresholds" class="details-link">View Details →</a>
+    </div>
+    
+    <div class="test-card success">
+        <div class="test-header">
+            <h3>05. Load Stages</h3>
+            <span class="status-badge success">✓ Passed</span>
+        </div>
+        <div class="test-metrics">
+            <div class="metric">
+                <span class="metric-label">Requests</span>
+                <span class="metric-value">852</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Avg Duration</span>
+                <span class="metric-value">32.18ms</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">P95 Duration</span>
+                <span class="metric-value">63.55ms</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Error Rate</span>
+                <span class="metric-value">0.00%</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Iterations</span>
+                <span class="metric-value">426</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Max VUs</span>
+                <span class="metric-value">10</span>
+            </div>
+        </div>
+        <a href="details.html?test=05-stages" class="details-link">View Details →</a>
+    </div>
+    
+    <div class="test-card success">
+        <div class="test-header">
+            <h3>API Load Test</h3>
+            <span class="status-badge success">✓ Passed</span>
+        </div>
+        <div class="test-metrics">
+            <div class="metric">
+                <span class="metric-label">Requests</span>
+                <span class="metric-value">2250</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Avg Duration</span>
+                <span class="metric-value">26.20ms</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">P95 Duration</span>
+                <span class="metric-value">63.62ms</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Error Rate</span>
+                <span class="metric-value">0.00%</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Iterations</span>
+                <span class="metric-value">450</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Max VUs</span>
+                <span class="metric-value">20</span>
+            </div>
+        </div>
+        <a href="details.html?test=api-load-test" class="details-link">View Details →</a>
+    </div>
+    
+    <div class="test-card success">
+        <div class="test-header">
+            <h3>Spike Test</h3>
+            <span class="status-badge success">✓ Passed</span>
+        </div>
+        <div class="test-metrics">
+            <div class="metric">
+                <span class="metric-label">Requests</span>
+                <span class="metric-value">7982</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Avg Duration</span>
+                <span class="metric-value">31.73ms</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">P95 Duration</span>
+                <span class="metric-value">62.93ms</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Error Rate</span>
+                <span class="metric-value">0.00%</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Iterations</span>
+                <span class="metric-value">3991</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Max VUs</span>
+                <span class="metric-value">100</span>
+            </div>
+        </div>
+        <a href="details.html?test=spike-test" class="details-link">View Details →</a>
+    </div>
+    
             </div>
         </div>
 
         <div class="footer">
             <p>Generated by GitHub Actions | Powered by Grafana k6</p>
             <p style="margin-top: 10px;">
-                <a href="https://github.com/JBxrajas/k6-performance-tests" style="color: #667eea; text-decoration: none;">
+                <a href="https://github.com/JBxrajas/k6-performance-tests" target="_blank">
                     View Repository →
                 </a>
             </p>
         </div>
     </div>
-    
-    <script>
-        document.getElementById('timestamp').textContent = new Date().toLocaleString();
-    </script>
 </body>
 </html>
