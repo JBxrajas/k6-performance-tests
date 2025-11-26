@@ -39,7 +39,9 @@ import { check, sleep, group } from 'k6';
 
 export const options = {
   stages: [
-    // TODO: Add your stages configuration
+    { duration: '10s', target: 5 }, // Ramp up to 5 VUs
+    { duration: '30s', target: 5 }, // Stay at 5 VUs
+    { duration: '10s', target: 0 }, // Ramp down to 0 VUs   
   ],
   thresholds: {
     http_req_duration: ['p(95)<1000'],
@@ -50,27 +52,56 @@ export const options = {
 
 export default function () {
   const BASE_URL = 'https://jsonplaceholder.typicode.com';
+  let randomUser, randomPost;
   
-  // TODO: Implement Step 1 - Fetch users list
+  // Step 1 - Fetch users list
   group('User List', function () {
+    const response = http.get(`${BASE_URL}/users`);
+    const users = response.json();
+    check(response, {
+      'status is 200': (r) => r.status === 200,
+      'users list is not empty': () => users.length > 0,
+    });
     
+    // Select a random user for the next step
+    randomUser = users[Math.floor(Math.random() * users.length)];
   });
   
-  sleep(1);
+  sleep(Math.floor(Math.random() * 3) + 1);
   
-  // TODO: Implement Step 2 & 3 - Fetch user's posts and select one
+  // Step 2 & 3 - Fetch user's posts and select one
   group('User Posts', function () {
+    const postsResponse = http.get(`${BASE_URL}/users/${randomUser.id}/posts`);
+    const posts = postsResponse.json();
+    check(postsResponse, {
+      'posts status is 200': (r) => r.status === 200,
+      'posts list is not empty': () => posts.length > 0,
+    });
     
+    // Select a random post from this user
+    randomPost = posts[Math.floor(Math.random() * posts.length)];
   });
   
-  sleep(2);
+  sleep(Math.floor(Math.random() * 3) + 1);
   
-  // TODO: Implement Step 4 & 5 - Fetch post and its comments
+  // Step 4 & 5 - Fetch post and its comments
   group('Post Details', function () {
+    const postResponse = http.get(`${BASE_URL}/posts/${randomPost.id}`);
+    const post = postResponse.json();
+    check(postResponse, {
+      'post status is 200': (r) => r.status === 200,
+      'post id matches': () => post.id === randomPost.id,
+    });
     
+    const commentsResponse = http.get(`${BASE_URL}/posts/${randomPost.id}/comments`);
+    const comments = commentsResponse.json();
+    check(commentsResponse, {
+      'comments status is 200': (r) => r.status === 200,
+      'comments list is not empty': () => comments.length > 0,
+    }); 
   });
   
-  sleep(1);
+  sleep(Math.floor(Math.random() * 3) + 1);
 }
 
 // Run your solution with: k6 run exercises/exercise-2.js

@@ -53,6 +53,12 @@ import { Counter, Trend } from 'k6/metrics';
 
 // TODO: Create custom metrics
 const successfulPosts = new Counter('successful_posts');
+const failedValidations = new Counter('failed_validations');
+const payloadSizeTrend = new Trend('payload_size');
+const responseSizeTrend = new Trend('response_size');
+const responseTimeTrend = new Trend('response_time');
+const errorCount = new Counter('error_count');
+const validationErrorCount = new Counter('validation_error_count');
 // Add more metrics...
 
 export const options = {
@@ -62,7 +68,10 @@ export const options = {
   thresholds: {
     http_req_duration: ['p(95)<1000'],
     // TODO: Add thresholds for custom metrics
-    // 'successful_posts': ['count>100'],
+    'successful_posts': ['count>100'],
+    'failed_validations': ['count<10'],
+    'error_count': ['count<20'],
+    'validation_error_count': ['count<15'],
   },
 };
 
@@ -71,7 +80,9 @@ export default function () {
   
   // TODO: Create random payload
   const payload = {
-    // Add your payload here
+    title: `Performance Test Post ${Math.floor(Math.random() * 1000)}`,
+    body: `This is a test post body with random content ${Math.random()}`,
+    userId: Math.floor(Math.random() * 10) + 1, 
   };
   
   const params = {
@@ -79,18 +90,45 @@ export default function () {
       'Content-Type': 'application/json',
     },
     tags: {
-      // TODO: Add custom tags
+        endpoint: 'create_post',    
+        method: 'POST',
+        payload_size: JSON.stringify(payload).length,
+        response_size: 0, // Placeholder, will update after response
+        response_time: 0, // Placeholder, will update after response
     },
   };
   
   // TODO: Make POST request
+    const startTime = new Date().getTime();
+    const response = http.post(`${BASE_URL}/posts`, JSON.stringify(payload), params);
+    const endTime = new Date().getTime();
+    const responseTime = endTime - startTime;
+    params.tags.response_time = responseTime;
+    params.tags.response_size = response.body.length;
   
   // TODO: Add comprehensive checks
+    const success = check(response, {
+        'status is 201': (r) => r.status === 201,
+        'response contains id field': (r) => r.json().hasOwnProperty('id'),
+        'response time < 800ms': (r) => r.timings.duration < 800,
+        'response body matches request data': (r) => {
+            const responseData = r.json();  
+            return responseData.title === payload.title &&
+                   responseData.body === payload.body &&
+                   responseData.userId === payload.userId;
+        }
+    });
   
   // TODO: Update custom metrics
-  
+    if (success) {
+        successfulPosts.add(1);
+    } else {
+        failedValidations.add(1);
+    }   
   // TODO: Add error handling
-  
+    if (response.status !== 201) {
+        errorCount.add(1);
+    }               
   sleep(1);
 }
 

@@ -26,15 +26,23 @@ import { check, sleep } from 'k6';
 
 // TODO: Add your options configuration here
 export const options = {
-  // Add VUs, duration, and thresholds
+  vus: 10,
+  duration: '30s',
 };
 
 export default function () {
-  // TODO: Make the HTTP request
-  
-  // TODO: Add checks
-  
-  // TODO: Add sleep
+
+    const response = http.get('https://jsonplaceholder.typicode.com/posts/1');
+    const data = JSON.parse(response.body);
+
+    check(response, {
+        'status is 200': (r) => r.status === 200,
+        'response time is less than 500ms': (r) => r.timings.duration < 500,
+        'response body contains the word "sunt"': (r) => r.body.includes('sunt'),
+        'response has a userId property': () => data.hasOwnProperty('userId'),
+    });
+
+    
 }
 
 // Run your solution with: k6 run exercises/exercise-1.js
