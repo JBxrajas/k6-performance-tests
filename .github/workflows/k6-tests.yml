@@ -37,7 +37,8 @@ jobs:
         
         # Run each test and generate JSON + summary output
         echo "Running examples..."
-        k6 run --out json=test-results/01-hello-world.json --summary-export=test-results/01-hello-world-summary.json examples/01-hello-world.js > test-results/01-hello-world.txt 2>&1 || true
+        k6 run --out json=test-results/00-script1.json --summary-export=test-results/00-script1-summary.json examples/00-script1.js > test-results/00-script1.txt 2>&1 || true
+        k6 run --out json=test-results/01-ramp.json --summary-export=test-results/01-ramp-summary.json examples/01-ramp.js > test-results/01-ramp.txt 2>&1 || true
         k6 run --out json=test-results/02-http-requests.json --summary-export=test-results/02-http-requests-summary.json examples/02-http-requests.js > test-results/02-http-requests.txt 2>&1 || true
         k6 run --out json=test-results/03-checks.json --summary-export=test-results/03-checks-summary.json examples/03-checks.js > test-results/03-checks.txt 2>&1 || true
         k6 run --out json=test-results/04-thresholds.json --summary-export=test-results/04-thresholds-summary.json examples/04-thresholds.js > test-results/04-thresholds.txt 2>&1 || true
@@ -46,6 +47,9 @@ jobs:
         echo "Running scenarios..."
         k6 run --out json=test-results/api-load-test.json --summary-export=test-results/api-load-test-summary.json scenarios/api-load-test.js > test-results/api-load-test.txt 2>&1 || true
         k6 run --out json=test-results/spike-test.json --summary-export=test-results/spike-test-summary.json scenarios/spike-test.js > test-results/spike-test.txt 2>&1 || true
+        
+        echo "Test results generated:"
+        ls -lah test-results/
     
     - name: Generate HTML Report
       run: |

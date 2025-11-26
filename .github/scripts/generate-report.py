@@ -40,16 +40,17 @@ def get_metric_value(metrics, metric_name, stat='avg'):
     except:
         return 0
 
-def generate_test_card(test_name, summary, file_name):
+def generate_test_card(test_name, summary, file_name, error_msg=None):
     """Generate HTML for a single test card"""
     if not summary:
+        error_text = error_msg if error_msg else "Test failed to complete or parse results"
         return f"""
         <div class="test-card error">
             <div class="test-header">
                 <h3>{test_name}</h3>
                 <span class="status-badge error">❌ Error</span>
             </div>
-            <p class="test-description">Test failed to complete or parse results</p>
+            <p class="test-description">{error_text}</p>
         </div>
         """
     
@@ -367,7 +368,8 @@ def generate_html_report():
     # Load all test summaries
     tests = []
     test_files = {
-        '01-hello-world-summary.json': '01. Hello World',
+        '00-script1-summary.json': '00. Simple Script',
+        '01-ramp-summary.json': '01. Ramping Load',
         '02-http-requests-summary.json': '02. HTTP Requests',
         '03-checks-summary.json': '03. Checks & Validations',
         '04-thresholds-summary.json': '04. Thresholds',
@@ -381,12 +383,25 @@ def generate_html_report():
     test_cards_html = ""
     
     for file_name, test_name in test_files.items():
-        summary = load_summary(results_dir / file_name)
+        file_path = results_dir / file_name
+        error_msg = None
+        
+        if not file_path.exists():
+            error_msg = f"Summary file not found: {file_name}"
+            print(f"  ⚠ Warning: {error_msg}")
+            summary = None
+        else:
+            summary = load_summary(file_path)
+            if not summary:
+                error_msg = f"Failed to parse {file_name}"
+                print(f"  ⚠ Warning: {error_msg}")
+        
         tests.append({'name': test_name, 'summary': summary, 'file': file_name})
-        test_cards_html += generate_test_card(test_name, summary, file_name)
+        test_cards_html += generate_test_card(test_name, summary, file_name, error_msg)
         
         # Generate detail page for each test
-        generate_detail_page(test_name, summary, file_name, docs_dir)
+        if summary:
+            generate_detail_page(test_name, summary, file_name, docs_dir)
         
         if summary:
             metrics = summary.get('metrics', {})
