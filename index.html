@@ -193,17 +193,17 @@
             <h1>🚀 K6 Performance Test Results</h1>
             <p class="subtitle">Automated performance testing with Grafana k6</p>
             <div class="timestamp">
-                <strong>Last Run:</strong> 2025-11-26 15:58:52 UTC
+                <strong>Last Run:</strong> 2025-11-26 16:21:30 UTC
             </div>
         </div>
         
         <div class="stats-overview">
             <div class="stat-card">
-                <div class="stat-value">7</div>
+                <div class="stat-value">8</div>
                 <div class="stat-label">Tests Executed</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">46,905</div>
+                <div class="stat-value">31,153</div>
                 <div class="stat-label">Total Requests</div>
             </div>
             <div class="stat-card">
@@ -220,14 +220,74 @@
             <h2 class="section-title">📊 Test Results</h2>
             <div class="test-grid">
                 
-        <div class="test-card error">
-            <div class="test-header">
-                <h3>01. Hello World</h3>
-                <span class="status-badge error">❌ Error</span>
-            </div>
-            <p class="test-description">Test failed to complete or parse results</p>
+    <div class="test-card success">
+        <div class="test-header">
+            <h3>00. Simple Script</h3>
+            <span class="status-badge success">✓ Passed</span>
         </div>
-        
+        <div class="test-metrics">
+            <div class="metric">
+                <span class="metric-label">Requests</span>
+                <span class="metric-value">2</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Avg Duration</span>
+                <span class="metric-value">31.15ms</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">P95 Duration</span>
+                <span class="metric-value">56.55ms</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Error Rate</span>
+                <span class="metric-value">0.00%</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Iterations</span>
+                <span class="metric-value">1</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Max VUs</span>
+                <span class="metric-value">0</span>
+            </div>
+        </div>
+        <a href="00-script1.html" class="details-link">View Details →</a>
+    </div>
+    
+    <div class="test-card success">
+        <div class="test-header">
+            <h3>01. Ramping Load</h3>
+            <span class="status-badge success">✓ Passed</span>
+        </div>
+        <div class="test-metrics">
+            <div class="metric">
+                <span class="metric-label">Requests</span>
+                <span class="metric-value">150</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Avg Duration</span>
+                <span class="metric-value">31.56ms</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">P95 Duration</span>
+                <span class="metric-value">62.08ms</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Error Rate</span>
+                <span class="metric-value">0.00%</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Iterations</span>
+                <span class="metric-value">75</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Max VUs</span>
+                <span class="metric-value">5</span>
+            </div>
+        </div>
+        <a href="01-ramp.html" class="details-link">View Details →</a>
+    </div>
+    
     <div class="test-card success">
         <div class="test-header">
             <h3>02. HTTP Requests</h3>
@@ -236,15 +296,15 @@
         <div class="test-metrics">
             <div class="metric">
                 <span class="metric-label">Requests</span>
-                <span class="metric-value">10440</span>
+                <span class="metric-value">10218</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Avg Duration</span>
-                <span class="metric-value">10.40ms</span>
+                <span class="metric-value">22.12ms</span>
             </div>
             <div class="metric">
                 <span class="metric-label">P95 Duration</span>
-                <span class="metric-value">19.14ms</span>
+                <span class="metric-value">62.95ms</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Error Rate</span>
@@ -252,7 +312,7 @@
             </div>
             <div class="metric">
                 <span class="metric-label">Iterations</span>
-                <span class="metric-value">3480</span>
+                <span class="metric-value">3406</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Max VUs</span>
@@ -270,15 +330,15 @@
         <div class="test-metrics">
             <div class="metric">
                 <span class="metric-label">Requests</span>
-                <span class="metric-value">200</span>
+                <span class="metric-value">190</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Avg Duration</span>
-                <span class="metric-value">12.58ms</span>
+                <span class="metric-value">31.60ms</span>
             </div>
             <div class="metric">
                 <span class="metric-label">P95 Duration</span>
-                <span class="metric-value">18.77ms</span>
+                <span class="metric-value">62.04ms</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Error Rate</span>
@@ -286,7 +346,7 @@
             </div>
             <div class="metric">
                 <span class="metric-label">Iterations</span>
-                <span class="metric-value">100</span>
+                <span class="metric-value">95</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Max VUs</span>
@@ -304,15 +364,15 @@
         <div class="test-metrics">
             <div class="metric">
                 <span class="metric-label">Requests</span>
-                <span class="metric-value">24802</span>
+                <span class="metric-value">9526</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Avg Duration</span>
-                <span class="metric-value">12.00ms</span>
+                <span class="metric-value">31.32ms</span>
             </div>
             <div class="metric">
                 <span class="metric-label">P95 Duration</span>
-                <span class="metric-value">19.96ms</span>
+                <span class="metric-value">61.70ms</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Error Rate</span>
@@ -320,7 +380,7 @@
             </div>
             <div class="metric">
                 <span class="metric-label">Iterations</span>
-                <span class="metric-value">12401</span>
+                <span class="metric-value">4763</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Max VUs</span>
@@ -338,15 +398,15 @@
         <div class="test-metrics">
             <div class="metric">
                 <span class="metric-label">Requests</span>
-                <span class="metric-value">890</span>
+                <span class="metric-value">852</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Avg Duration</span>
-                <span class="metric-value">12.11ms</span>
+                <span class="metric-value">31.89ms</span>
             </div>
             <div class="metric">
                 <span class="metric-label">P95 Duration</span>
-                <span class="metric-value">19.64ms</span>
+                <span class="metric-value">62.10ms</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Error Rate</span>
@@ -354,7 +414,7 @@
             </div>
             <div class="metric">
                 <span class="metric-label">Iterations</span>
-                <span class="metric-value">445</span>
+                <span class="metric-value">426</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Max VUs</span>
@@ -372,15 +432,15 @@
         <div class="test-metrics">
             <div class="metric">
                 <span class="metric-label">Requests</span>
-                <span class="metric-value">2285</span>
+                <span class="metric-value">2245</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Avg Duration</span>
-                <span class="metric-value">11.35ms</span>
+                <span class="metric-value">25.76ms</span>
             </div>
             <div class="metric">
                 <span class="metric-label">P95 Duration</span>
-                <span class="metric-value">19.61ms</span>
+                <span class="metric-value">61.96ms</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Error Rate</span>
@@ -388,7 +448,7 @@
             </div>
             <div class="metric">
                 <span class="metric-label">Iterations</span>
-                <span class="metric-value">457</span>
+                <span class="metric-value">449</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Max VUs</span>
@@ -406,15 +466,15 @@
         <div class="test-metrics">
             <div class="metric">
                 <span class="metric-label">Requests</span>
-                <span class="metric-value">8288</span>
+                <span class="metric-value">7970</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Avg Duration</span>
-                <span class="metric-value">12.67ms</span>
+                <span class="metric-value">32.23ms</span>
             </div>
             <div class="metric">
                 <span class="metric-label">P95 Duration</span>
-                <span class="metric-value">19.45ms</span>
+                <span class="metric-value">63.29ms</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Error Rate</span>
@@ -422,7 +482,7 @@
             </div>
             <div class="metric">
                 <span class="metric-label">Iterations</span>
-                <span class="metric-value">4144</span>
+                <span class="metric-value">3985</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Max VUs</span>
